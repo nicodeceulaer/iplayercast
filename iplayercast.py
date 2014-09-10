@@ -25,6 +25,7 @@ import os
 import pickle
 import subprocess
 import datetime
+import shutil
 
 
 # internal classes
@@ -45,9 +46,9 @@ class Feed:
 
 
 # constants
-MASTER_CONFIG_FILENAME = "iplayercast.conf"
-FEED_CONFIG_DIRECTORY = "/feeds"
-TEMP_DIRECTORY = "/tmp/iplayercast/"
+MASTER_CONFIG_FILENAME   = "iplayercast.conf"
+FEED_CONFIG_DIRECTORY    = "/feeds"
+TEMP_DIRECTORY           = "/tmp/iplayercast/"
 PROGRAMME_OUTPUT_KEYWORD = "programmeoutput"
 
 
@@ -97,6 +98,10 @@ def run():
 	# scan for feed config files and process each
 	for root, directories, files in os.walk(config_directory + FEED_CONFIG_DIRECTORY):
 		for filename in files:
+			if filename == ".DS_Store":
+				continue
+
+			print("about to read config " + filename )
 			load_feed(filename)
 		print("Finished.")
 		return # stop here, we have processed the feeds
@@ -109,7 +114,7 @@ def load_feed(config_filename):
 	# load the feed config file
 	feed_config = RawConfigParser()
 	feed_config.read(config_directory + FEED_CONFIG_DIRECTORY + "/" + config_filename)
-	print("Loading feed: " + feed_config.get("General", "name"))
+	print("=== Loading feed: " + feed_config.get("General", "name"))
 	
 	# create the output directory for this feed if required
 	make_sure_path_exists(master_config.get("General", "output_dir") + "/" + feed_config.get("General", "output_dir"))
@@ -121,16 +126,19 @@ def load_feed(config_filename):
 	searches = feed_config.get("General", "searches").split(",")
 	# loop and retrieve details for each search using get-iplayer, insert it into the feed if not already present
 	for search in searches:
+		print("  search program " + search )
 		programmes = get_programmes(search.strip())
 		
 		# check if the feed already contains each programme, if not add it
 		for new_programme in programmes:
+			print("* found program " + new_programme.name )
 			present = False
 			for old_programme in feed.programmes:
 				if new_programme.pid == old_programme.pid:
 					present = True
 			# add the programme if not present
 			if not present:
+				print("adding program " + new_programme.name )
 				feed.programmes.append(new_programme)
 
 	
@@ -156,6 +164,7 @@ def load_feed_history(feed_config):
 	except IOError:
 		print("History for \"" + feed_config.get("General", "name") + "\" did not exist or some other problem occured. Will create one.")
 		return Feed()
+		print("history created")
 
 
 def save_feed_history(feed, feed_config):	
@@ -172,12 +181,12 @@ def save_feed_history(feed, feed_config):
 
 def get_programmes(search):
 	# build the command line switches
-	switch_type = "--type=all"
+	switch_type = "--type=radio"
 	switch_output_control = "--nocopyright"
 	switch_list_format = "--listformat=" + PROGRAMME_OUTPUT_KEYWORD + "|<pid>|<name>|<episode>|<desc>"
 	
 	# run the command
-	output = subprocess.check_output([get_iplayer_path, switch_type, switch_output_control, switch_list_format, search]).decode("utf-8")
+	output = subprocess.check_output([get_iplayer_path, switch_type, switch_output_control, switch_list_format, search]).decode("utf-8", 'ignore')
 	
 	# build this output into programme objects, produce a list of the output lines
 	programmes = []
@@ -206,13 +215,14 @@ def download_programme(feed_config, programme):
 	switch_file_prefix = "--file-prefix=<pid>"
 	switch_type = "--type=all"
 	switch_get = "--pid=" + programme.pid
+	switch_thumb = "--thumb"
 	
 	# check if we need to switch tagging off
 	switch_tagging = ""
 	if(master_config.getboolean("General", "no_file_tagging")):
 		switch_tagging = "--no-tag"
-	
-	command = [get_iplayer_path, switch_output_dir, switch_file_prefix, switch_type, switch_get, "--force", "--modes=best", "--quiet", switch_tagging]
+	# "--quiet", 
+	command = [get_iplayer_path, switch_output_dir, switch_file_prefix, switch_type, switch_get, switch_thumb, "--force", "--modes=best", switch_tagging]
 	subprocess.call(command)
 	
 	# find and record the name of the programme, and then move it to the final directory
@@ -220,8 +230,10 @@ def download_programme(feed_config, programme):
 	for root, directories, files in os.walk(TEMP_DIRECTORY):
 		for filename in files:
 			programme.filename = filename
-			os.rename(TEMP_DIRECTORY + filename, output_dir + "/" + filename)
-	
+			print("moving "+ filename + " from " + TEMP_DIRECTORY + " to " + output_dir )
+			# os.rename(TEMP_DIRECTORY + filename, output_dir + "/" + filename)
+			shutil.move(TEMP_DIRECTORY + filename, output_dir + "/" + filename)
+
 	# delete the temp directory
 	os.rmdir(TEMP_DIRECTORY)
 	
@@ -241,16 +253,20 @@ def write_feed_rss(feed_config, feed):
 	output_file_path = feed_path + "/feed.xml"
 	output_file = open(output_file_path, "w")
 	now = datetime.datetime.now()
-	
+	rss_link = master_config.get("General", "server_url") + "/" + feed_config.get("General", "output_dir") + "/" + "/feed.xml"		
+	rssTitle = ""
+	rss_ttl  = "60"  # time to live in minutes ?
+	rssImageUrl = ""
+
 	# write header information
 	output_file.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n")
-	output_file.write("<rss version=\"2.0\">\n")
+	output_file.write("<rss xmlns:itunes=\"http://www.itunes.com/dtds/podcast-1.0.dtd\" version=\"2.0\">\n")
 	output_file.write("<channel>\n")
 	output_file.write("<title>" + feed_config.get("General", "name") + "</title>\n")
 	output_file.write("<description>" + "iplayercast custom feed" + "</description>\n")
-	#output_file.write("<link>" + rssLink + "</link>\n")
-	#output_file.write("<ttl>" + rssTtl + "</ttl>\n")
-	#output_file.write("<image><url>" + rssImageUrl + "</url><title>" + rssTitle + "</title><link>" + rssLink + "</link></image>\n")
+	output_file.write("<link>" + rss_link + "</link>\n")
+	output_file.write("<ttl>" + rss_ttl + "</ttl>\n")
+	#output_file.write("<image><url>" + rssImageUrl + "</url><title>" + rssTitle + "</title><link>" + rss_link + "</link></image>\n")
 	#output_file.write("<copyright>BBC 2013</copyright>\n")
 	output_file.write("<lastBuildDate>" + format_date(now) + "</lastBuildDate>\n")
 	output_file.write("<pubDate>" + format_date(now) + "</pubDate>\n")
@@ -265,8 +281,9 @@ def write_feed_rss(feed_config, feed):
 		except OSError as exception:
 			print("Programme file appears to be missing for \"" + programme.name + "\": " + feed_path + programme.filename)
 		
-		file_url = master_config.get("General", "server_url") + "/" + feed_config.get("General", "output_dir") + "/" + programme.filename
-		
+		file_url  = master_config.get("General", "server_url") + "/" + feed_config.get("General", "output_dir") + "/" + programme.filename
+#		image_name = os.path.splitext(programme.filename)[0] + ".jpg"
+#		image_url = master_config.get("General", "server_url") + "/" + feed_config.get("General", "output_dir") + "/" + image_name
 		output_file.write("<item>\n")
 		output_file.write("<title>" + programme.episode + " - " + programme.name + "</title>\n")
 		output_file.write("<description>" + programme.desc + "</description>\n")
@@ -274,6 +291,10 @@ def write_feed_rss(feed_config, feed):
 		output_file.write("<guid>" + programme.pid + "</guid>\n")
 		output_file.write("<pubDate>" + format_date(programme.date_loaded) + "</pubDate>\n")
 		output_file.write("<enclosure url=\"" + file_url + "\" length=\"" + file_size + "\" type=\"" + get_extension(file_url) + "\" />\n")
+#		output_file.write("<itunes:image href=\"" + image_url + "\"></itunes:image>\n")
+#		output_file.write("<image>\n")
+#		output_file.write("<url>" + image_url + "</url>\n")
+#		output_file.write("</image>\n")
 		output_file.write("</item>\n")
 	
 	# write footer
