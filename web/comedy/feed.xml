@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+<channel>
+<title>BBC comedy</title>
+<description>iplayercast custom feed</description>
+<link>http://192.168.0.99/iplayer/comedy//feed.xml</link>
+<ttl>60</ttl>
+<lastBuildDate>Sat, 22 Feb 2014 09:51:27 +0000</lastBuildDate>
+<pubDate>Sat, 22 Feb 2014 09:51:27 +0000</pubDate>
+<item>
+<title>Episode 1 - Just a Minute: Series 68</title>
+<description>With Gyles Brandreth, Tony Hawks, Fi Glover and Paul Merton. Nicholas Parsons hosts.</description>
+<guid>b03trq8h</guid>
+<pubDate>Sat, 22 Feb 2014 09:49:28 +0000</pubDate>
+<enclosure url="http://192.168.0.99/iplayer/comedy/b03trq8h.m4a" length="13156722" type="m4a" />
+</item>
+<item>
+<title>Episode 2 - Just a Minute: Series 68</title>
+<description>Nicholas Parsons with Alun Cochrane, Rebecca Front, Russell Kane and Paul Merton.</description>
+<guid>b03vdknk</guid>
+<pubDate>Sat, 22 Feb 2014 09:49:28 +0000</pubDate>
+<enclosure url="http://192.168.0.99/iplayer/comedy/b03vdknk.m4a" length="10965671" type="m4a" />
+</item>
+<item>
+<title>1. Wedding Planner - Thanks a Lot, Milton Jones!</title>
+<description>When a groom-to-be mysteriously vanishes, Milton leaps in!</description>
+<guid>b03vgnjl</guid>
+<pubDate>Sat, 22 Feb 2014 09:49:29 +0000</pubDate>
+<enclosure url="http://192.168.0.99/iplayer/comedy/b03vgnjl.m4a" length="10963012" type="m4a" />
+</item>
+<item>
+<title>2. Unconventional Parents - Shappi Talk: Series 1</title>
+<description>Shappi recalls her memories of growing up with extremely unconventional parents.</description>
+<guid>b00lk2zh</guid>
+<pubDate>Sat, 22 Feb 2014 09:49:33 +0000</pubDate>
+<enclosure url="http://192.168.0.99/iplayer/comedy/b00lk2zh.m4a" length="13158611" type="m4a" />
+</item>
+<item>
+<title>Episode 1 - News Quiz Extra: Series 10</title>
+<description>Featuring jokes, clips and material that you won't have heard in this week's News Quiz.</description>
+<guid>b03vgwkc</guid>
+<pubDate>Sat, 22 Feb 2014 09:49:35 +0000</pubDate>
+<enclosure url="http://192.168.0.99/iplayer/comedy/b03vgwkc.m4a" length="18633306" type="m4a" />
+</item>
+<item>
+<title>6. Friendship and Stress - The Problem With Adam Bloom: Series 3</title>
+<description>A double dose, as the funnyman ponders why we choose our pals and what causes pressure.</description>
+<guid>b01bwbgs</guid>
+<pubDate>Sat, 22 Feb 2014 09:49:36 +0000</pubDate>
+<enclosure url="http://192.168.0.99/iplayer/comedy/b01bwbgs.m4a" length="13155220" type="m4a" />
+</item>
+<item>
+<title>Episode 4 - The Alan Davies Show</title>
+<description>The struggling actor and mate Murray try out a global food cafe, while Kate has a bad day.</description>
+<guid>b0089kpx</guid>
+<pubDate>Sat, 22 Feb 2014 09:49:37 +0000</pubDate>
+<enclosure url="http://192.168.0.99/iplayer/comedy/b0089kpx.m4a" length="13153363" type="m4a" />
+</item>
+</channel>
+</rss>
