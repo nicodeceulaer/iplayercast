@@ -154,10 +154,12 @@ def load_feed(config_filename):
 
 	# split the search terms into a list
 	searches = feed_config.get("General", "searches").split(",")
+
 	# loop and retrieve details for each search using get-iplayer, insert it into the feed if not already present
 	for search in searches:
-		print("search program " + search )
-		programmes = get_programmes(search.strip())
+		search = search.strip()
+		print("search program (" + search + ")" )
+		programmes = get_programmes(search)
 
 		# check if the feed already contains each programme, if not add it
 		for new_programme in programmes:
@@ -210,7 +212,7 @@ def save_feed_history(feed, feed_config):
 		print(exception)
 
 
-def get_programmes(title):
+def get_programmes_scraper(title):
 	global bbc_programmes
 	checker  = re.compile( title, re.IGNORECASE )
 	programmes = []
@@ -226,7 +228,7 @@ def get_programmes(title):
 			programmes.append(programme)
 	return programmes
 
-def get_programmes_old(search):
+def get_programmes(search):
 	# build the command line switches
 	switch_type = "--type=radio"
 	switch_output_control = "--nocopyright"
