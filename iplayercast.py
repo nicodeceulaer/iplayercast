@@ -103,8 +103,8 @@ def run():
 
 	# new BBC rules :-( now we get the programm info externally using a different script
 	# and read that scripts output directly into a hash
-	global bbc_programmes
-	bbc_programmes = load_bbc_programmes()
+	# global bbc_programmes
+	# bbc_programmes = load_bbc_programmes()
 
 	# scan for feed config files and process each
 	for root, directories, files in os.walk(config_directory + FEED_CONFIG_DIRECTORY):
