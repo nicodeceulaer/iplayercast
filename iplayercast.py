@@ -20,6 +20,7 @@
 
 from optparse import OptionParser
 from configparser import RawConfigParser
+from xml.sax.saxutils import escape
 import os
 import re
 import pickle
@@ -334,12 +335,12 @@ def write_feed_rss(feed_config, feed):
 #		image_name = os.path.splitext(programme.filename)[0] + ".jpg"
 #		image_url = master_config.get("General", "server_url") + "/" + feed_config.get("General", "output_dir") + "/" + image_name
 		output_file.write("<item>\n")
-		output_file.write("<title>" + programme.episode + " - " + programme.name + "</title>\n")
-		output_file.write("<description>" + programme.desc + "</description>\n")
+		output_file.write("<title>" + escape(programme.episode) + " - " + escape( programme.name) + "</title>\n")
+		output_file.write("<description>" + escape(programme.desc )+ "</description>\n")
 		#output_file.write("<link>" + rssItemURL + relativePath + "</link>\n")
-		output_file.write("<guid>" + programme.pid + "</guid>\n")
-		output_file.write("<pubDate>" + format_date(programme.date_loaded) + "</pubDate>\n")
-		output_file.write("<enclosure url=\"" + file_url + "\" length=\"" + file_size + "\" type=\"" + get_extension(file_url) + "\" />\n")
+		output_file.write("<guid>" + escape(programme.pid) + "</guid>\n")
+		output_file.write("<pubDate>" + escape(format_date(programme.date_loaded)) + "</pubDate>\n")
+		output_file.write("<enclosure url=\"" + escape(file_url) + "\" length=\"" + escape(file_size) + "\" type=\"" + escape(get_extension(file_url)) + "\" />\n")
 #		output_file.write("<itunes:image href=\"" + image_url + "\"></itunes:image>\n")
 #		output_file.write("<image>\n")
 #		output_file.write("<url>" + image_url + "</url>\n")
